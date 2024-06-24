@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/Rizwan-Hasan/GPA-Calculator-Python/master/icon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        input {
+            width: 200px;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="color:blue;"><b>GPA Calculator</b></h2>
+
+    <div id="input-row-1">
+        <input type="text" id="gradePoint" placeholder="Grade Point">
+        <input type="text" id="creditHour" placeholder="Credit Hour">
+    </div>
+
+    <div id="input-row-2"></div>
+
+    <div id="buttons-container">
+        <button onclick="addField()" class="btn btn-secondary"><b>+</b> Add Field</button>
+        <button onclick="calculateGPA()" class="btn btn-success">♻ Calculate</button>
+        <button onclick="showHistory()" class="btn btn-primary"><b>↻</b> History</button>
+    </div>
+
+    <hr>
+
+    <h3>Results</h3>
+
+    <div id="result"></div>
+
+    <h3>History</h3>
+
+    <div id="history"></div>
+
+    <script>
+        // Load historyData from localStorage on page load
+        var historyData = JSON.parse(localStorage.getItem('historyData')) || [];
+
+        function addField() {
+            const gradePointInput = document.getElementById('gradePoint');
+            const creditHourInput = document.getElementById('creditHour');
+            const inputRow2 = document.getElementById('input-row-2');
+
+            // Clone the top input fields
+            const newGradePointInput = gradePointInput.cloneNode();
+            const newCreditHourInput = creditHourInput.cloneNode();
+
+            // Clear the values in the cloned fields
+            newGradePointInput.value = '';
+            newCreditHourInput.value = '';
+
+            // Append the cloned fields to the second row
+            inputRow2.appendChild(newGradePointInput);
+            inputRow2.appendChild(newCreditHourInput);
+        }
+
+        function calculateGPA() {
+            const gradePointInputs = document.querySelectorAll('input[id="gradePoint"]');
+            const creditHourInputs = document.querySelectorAll('input[id="creditHour"]');
+
+            let totalCreditHours = 0;
+            let totalWeightedPoints = 0;
+
+            gradePointInputs.forEach((gradePointInput, index) => {
+                const creditHour = parseFloat(creditHourInputs[index].value);
+                const gradePoint = parseFloat(gradePointInput.value);
+
+                if (!isNaN(creditHour) && !isNaN(gradePoint)) {
+                    totalCreditHours += creditHour;
+                    totalWeightedPoints += gradePoint * creditHour;
+                }
+            });
+
+            const gpa = totalCreditHours === 0 ? 0 : (totalWeightedPoints / totalCreditHours).toFixed(2);
+
+            // Display GPA result
+            document.getElementById('result').innerHTML = `<p>GPA: ${gpa}</p>`;
+
+            // Save data to history and localStorage
+            historyData.push({
+                gpa: gpa,
+                date: new Date().toLocaleString()
+            });
+            localStorage.setItem('historyData', JSON.stringify(historyData));
+        }
+
+        function showHistory() {
+            const historyDiv = document.getElementById('history');
+            historyDiv.innerHTML = '<h4>History</h4>';
+
+            if (historyData.length === 0) {
+                historyDiv.innerHTML += '<p>No history available.</p>';
+            } else {
+                historyDiv.innerHTML += '<table class="table table-striped">';
+                historyDiv.innerHTML += '<thead><tr><th>#</th><th>GPA</th><th>Date</th><th>Action</th></tr></thead>';
+                historyDiv.innerHTML += '<tbody>';
+                historyData.forEach((entry, index) => {
+                    historyDiv.innerHTML += `<tr><td>${index + 1}</td><td>${entry.gpa}</td><td>${entry.date}</td><td><button onclick="deleteEntry(${index})" class="btn btn-danger">Delete</button></td></tr>`;
+                });
+                historyDiv.innerHTML += `<tr><td colspan="4"><button onclick="clearHistory()" class="btn btn-danger">Clear All</button></td></tr>`;
+                historyDiv.innerHTML += '</tbody></table>';
+            }
+        }
+
+        function deleteEntry(index) {
+            historyData.splice(index, 1);
+            localStorage.setItem('historyData', JSON.stringify(historyData));
+            showHistory();
+        }
+
+        function clearHistory() {
+            historyData = [];
+            localStorage.setItem('historyData', JSON.stringify(historyData));
+            showHistory();
+        }
+    </script>
+<center><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiHmJgbgc9Cfq8GvzFJUYVrVT5aeGqoqAcHEIufe1fwD2FzwmMWGS4FI1YEb_H8haWEXC2vTsCAZQ_3N9w0wgddjzAbU9xlU-z0ett6cPQA1X6fnDeQLWS_2yN8RbvIFlOwAQpNXCKh4CCaMzrKKLwvvkHRK9SMA3n4tITIXoSZ0zhLGH_qkUcqmiUVtek/s605/1698932455372.jpg" alt="Shiva Prasad Dhakal" style="width:80px;height:;"></center>
+<center>Copyright © 2080 (2023)- All Rights Reserved - <a href="https://www.shivanp.com.np/">Shiva Prasad Dhakal</a></center>
+<center>Email: dhakalvi@gmail.com</center>
+<center>Contact: 9867026254, 9806520067</center>
+<center>Designed By: <a href="https://www.facebook.com/shiva.dhakal.378">Shiva Prasad Dhakal</a></center>
+</body>
+</html>

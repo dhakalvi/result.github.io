@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade and Grade Point Calculator</title>
+<link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/Rizwan-Hasan/GPA-Calculator-Python/master/icon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        input[type=text] {
+  width: 300px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+input[type=number] {
+  width: 300px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
+        button {
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        #history {
+            display: none;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1 style="color:blue;"><b>Grade and Grade Point Calculator</b></h1>
+    <input type="text" id="subject" placeholder="Subject Name">
+    <br>
+    <input type="number" id="fullMark" placeholder="Enter Full Mark" >
+    <br>
+    <input type="number" id="obedientMarks" placeholder="Enter Obedient Marks">
+
+    <br>
+
+    <button onclick="calculateGrade()" class="btn btn-success"> ♻ Calculate</button>
+    <button onclick="showHistory()" class="btn btn-primary"><b>↻</b> History</button>
+
+    <div id="result"></div>
+    <div id="history" class="mt-4"></div>
+
+    <script>
+        // Load historyData from localStorage on page load
+        var historyData = JSON.parse(localStorage.getItem('historyData')) || [];
+
+        function calculateGrade() {
+            var subject = document.getElementById('subject').value;
+            var fullMark = parseInt(document.getElementById('fullMark').value);
+            var obedientMarks = parseInt(document.getElementById('obedientMarks').value);
+
+            if (isNaN(fullMark) || isNaN(obedientMarks)) {
+                alert("Please enter valid numeric values for Full Mark and Obedient Marks.");
+                return;
+            }
+
+            var percentage = (obedientMarks / fullMark) * 100;
+
+            var grade, gradePoint;
+
+            if (percentage >= 90) {
+                grade = "A+";
+                gradePoint = "4.0";
+            } else if (percentage >= 80) {
+                grade = "A";
+                gradePoint = "3.6";
+            } else if (percentage >= 70) {
+                grade = "B+";
+                gradePoint = "3.2";
+            } else if (percentage >= 60) {
+                grade = "B";
+                gradePoint = "2.8";
+            } else if (percentage >= 50) {
+                grade = "C+";
+                gradePoint = "2.0";
+            } else if (percentage >= 40) {
+                grade = "C";
+                gradePoint = "2.0";
+            } else if (percentage >= 35) {
+                grade = "D";
+                gradePoint = "1.6";
+            } else {
+                grade = "NG";
+                gradePoint = "-";
+            }
+
+            var result = `<p>Subject: ${subject}</p>`;
+            result += `<p>Percentage: ${percentage.toFixed(2)}%</p>`;
+            result += `<p>Grade: ${grade}</p>`;
+            result += `<p>Grade Point: ${gradePoint}</p>`;
+
+            document.getElementById('result').innerHTML = result;
+
+            // Save data to history and localStorage
+            historyData.push({
+                subject: subject,
+                percentage: percentage.toFixed(2),
+                grade: grade,
+                gradePoint: gradePoint
+            });
+            localStorage.setItem('historyData', JSON.stringify(historyData));
+        }
+
+        function showHistory() {
+            var historyDiv = document.getElementById('history');
+            historyDiv.innerHTML = "<h2>History</h2>";
+
+            if (historyData.length === 0) {
+                historyDiv.innerHTML += "<p>No history available.</p>";
+            } else {
+                var table = `
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Percentage</th>
+                                <th>Grade</th>
+                                <th>Grade Point</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                for (var i = 0; i < historyData.length; i++) {
+                    table += `
+                        <tr>
+                            <td>${historyData[i].subject}</td>
+                            <td>${historyData[i].percentage}%</td>
+                            <td>${historyData[i].grade}</td>
+                            <td>${historyData[i].gradePoint}</td>
+                            <td><button onclick="deleteEntry(${i})" class="btn btn-warning btn-sm"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button></td>
+                        </tr>
+                    `;
+                }
+
+                table += `
+                    </tbody>
+                    </table>
+                    <button onclick="clearHistory()" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Clear All</button>
+                `;
+
+                historyDiv.innerHTML += table;
+            }
+
+            historyDiv.style.display = 'block';
+        }
+
+        function deleteEntry(index) {
+            historyData.splice(index, 1);
+            localStorage.setItem('historyData', JSON.stringify(historyData));
+            showHistory();
+        }
+
+        function clearHistory() {
+            historyData = [];
+            localStorage.setItem('historyData', JSON.stringify(historyData));
+            showHistory();
+        }
+    </script>
+
+<center><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiHmJgbgc9Cfq8GvzFJUYVrVT5aeGqoqAcHEIufe1fwD2FzwmMWGS4FI1YEb_H8haWEXC2vTsCAZQ_3N9w0wgddjzAbU9xlU-z0ett6cPQA1X6fnDeQLWS_2yN8RbvIFlOwAQpNXCKh4CCaMzrKKLwvvkHRK9SMA3n4tITIXoSZ0zhLGH_qkUcqmiUVtek/s605/1698932455372.jpg" alt="Shiva Prasad Dhakal" style="width:80px;height:;"></center>
+<center>Copyright © 2080 (2023)- All Rights Reserved - <a href="https://www.shivanp.com.np/">Shiva Prasad Dhakal</a></center>
+<center>Email: dhakalvi@gmail.com</center>
+<center>Contact: 9867026254, 9806520067</center>
+<center>Designed By: <a href="https://www.facebook.com/shiva.dhakal.378">Shiva Prasad Dhakal</a></center>
+</body>
+</html>
