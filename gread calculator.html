@@ -3,181 +3,728 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade and Grade Point Calculator</title>
+    <title>Nepali Grading System</title>
 <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/Rizwan-Hasan/GPA-Calculator-Python/master/icon.ico">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
-<style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #166088;
+            --secondary-color: #4a6fa5;
+            --accent-color: #e63946;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            padding-bottom: 2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        input[type=text] {
-  width: 300px;
-  padding: 12px 20px;
-  margin: 8px 0;
-  box-sizing: border-box;
-}
-input[type=number] {
-  width: 300px;
-  padding: 12px 20px;
-  margin: 8px 0;
-  box-sizing: border-box;
-}
-
-        button {
-            margin: 5px;
+        
+        .header {
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem 0;
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .grading-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .grading-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .grading-card .card-header {
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            border-bottom: none;
+        }
+        
+        .nav-tabs .nav-link {
+            font-weight: 600;
+            color: var(--secondary-color);
+            border: none;
+            padding: 1rem 1.5rem;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: white;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .tab-content {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 0 0 15px 15px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .result-card {
+            background: linear-gradient(120deg, #e3f2fd, #bbdefb);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-custom {
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+        }
+        
+        .btn-custom:hover {
+            background: linear-gradient(120deg, var(--secondary-color), var(--primary-color));
+            color: white;
+        }
+        
+        .history-item {
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s;
+            margin-bottom: 0.75rem;
+        }
+        
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .subject-row {
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .subject-row:last-child {
+            border-bottom: none;
+        }
+        
+        .grade-display {
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            display: inline-block;
+            color: white;
+        }
+        
+        .grade-Aplus { background-color: #2e7d32; }
+        .grade-A { background-color: #4caf50; }
+        .grade-Bplus { background-color: #7cb342; }
+        .grade-B { background-color: #9ccc65; }
+        .grade-Cplus { background-color: #f9a825; }
+        .grade-C { background-color: #ffb300; }
+        .grade-D { background-color: #ef6c00; }
+        .grade-NG { background-color: #c62828; }
+        
+        .info-icon {
+            color: var(--primary-color);
             cursor: pointer;
+            margin-left: 0.5rem;
         }
-
-        #history {
-            display: none;
-            margin-top: 20px;
+        
+        .footer {
+            text-align: center;
+            padding: 1.5rem 0;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
         }
-
+        
+        .gpa-badge {
+            font-size: 1.8rem;
+            font-weight: 700;
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: inline-block;
+            margin: 1rem 0;
+        }
+        
+        .system-info {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .table-custom th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .subject-inputs input {
+            max-width: 100px;
+        }
+        
+        .subject-row td {
+            vertical-align: middle;
+        }
+        
+        .action-buttons {
+            min-width: 100px;
+        }
     </style>
 </head>
 <body>
-    <h1 style="color:blue;"><b>Grade and Grade Point Calculator</b></h1>
-    <input type="text" id="subject" placeholder="Subject Name">
-    <br>
-    <input type="number" id="fullMark" placeholder="Enter Full Mark" >
-    <br>
-    <input type="number" id="obedientMarks" placeholder="Enter Obedient Marks">
+    <div class="header text-center">
+        <div class="container">
+            <h1><i class="fas fa-calculator me-2"></i>Nepali Grading System</h1>
+            <p class="lead">Calculate grades and GPA according to Nepal's education system</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="grade-tab" data-bs-toggle="tab" data-bs-target="#grade" type="button" role="tab">Grade Calculator</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="gpa-tab" data-bs-toggle="tab" data-bs-target="#gpa" type="button" role="tab">GPA Converter</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">Grading System</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="myTabContent">
+            <!-- Grade Calculator Tab -->
+            <div class="tab-pane fade show active" id="grade" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="grading-card">
+                            <div class="card-header">
+                                <i class="fas fa-calculator me-2"></i>Calculate Grade
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="obtainedMarks" class="form-label">Obtained Marks</label>
+                                    <input type="number" class="form-control" id="obtainedMarks" placeholder="Enter marks obtained" min="0" max="100" value="85">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="totalMarks" class="form-label">Total Marks</label>
+                                    <input type="number" class="form-control" id="totalMarks" value="100" placeholder="Enter total marks" min="1" max="200">
+                                </div>
+                                <button class="btn btn-custom w-100" onclick="calculateGrade()">
+                                    <i class="fas fa-calculator me-2"></i>Calculate Grade
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="grading-card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-line me-2"></i>Result
+                            </div>
+                            <div class="card-body">
+                                <div id="gradeResult" class="text-center">
+                                    <div class="mb-3">
+                                        <div>Percentage</div>
+                                        <div class="display-4 fw-bold text-primary" id="percentageResult">85.00%</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div>Grade</div>
+                                            <div class="h2 fw-bold grade-A" id="gradeResultText">A</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div>Grade Point</div>
+                                            <div class="h2 fw-bold" id="gpResult">3.6</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div>Description</div>
+                                        <div class="h5 fw-bold text-muted" id="descriptionResult">Excellent</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- GPA Converter Tab -->
+            <div class="tab-pane fade" id="gpa" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="grading-card">
+                            <div class="card-header">
+                                <i class="fas fa-exchange-alt me-2"></i>GPA Calculator
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Subject</th>
+                                                <th>Credit Hour (CH)</th>
+                                                <th>Obtained Marks</th>
+                                                <th>Total Marks</th>
+                                                <th>Grade Point</th>
+                                                <th class="action-buttons">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="subjectTable">
+                                            <tr class="subject-row">
+                                                <td>
+                                                    <input type="text" class="form-control subject-name" placeholder="e.g. Math" value="Math">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control credit-hour" value="4" min="0" step="0.5">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control obtained-marks" placeholder="Marks" value="85" min="0">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control total-marks" placeholder="Total" value="100" min="1">
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <span class="fw-bold grade-A">3.6</span>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <button class="btn btn-sm btn-danger" onclick="removeSubject(this)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr class="subject-row">
+                                                <td>
+                                                    <input type="text" class="form-control subject-name" placeholder="e.g. Science" value="Science">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control credit-hour" value="4" min="0" step="0.5">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control obtained-marks" placeholder="Marks" value="78" min="0">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control total-marks" placeholder="Total" value="100" min="1">
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <span class="fw-bold grade-Bplus">3.2</span>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <button class="btn btn-sm btn-danger" onclick="removeSubject(this)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-3">
+                                    <button class="btn btn-outline-primary" onclick="addSubject()">
+                                        <i class="fas fa-plus me-2"></i>Add Subject
+                                    </button>
+                                    <button class="btn btn-custom" onclick="calculateGPA()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate GPA
+                                    </button>
+                                </div>
+                                
+                                <div id="gpaResult" class="result-card mt-4 text-center">
+                                    <h5>Your GPA Result</h5>
+                                    <div class="gpa-badge" id="gpaValue">3.40</div>
+                                    <p class="mb-0">Total Grade Points: <span id="totalPoints">27.2</span></p>
+                                    <p>Total Credit Hours: <span id="totalCredits">8.0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="grading-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-history me-2"></i>Calculation History
+                                </div>
+                                <button class="btn btn-sm btn-danger" onclick="clearHistory()">
+                                    <i class="fas fa-trash me-1"></i>Clear All
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="historyContainer" class="mt-3">
+                                    <div class="card history-item mb-2">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="card-title">GPA: 3.40</h6>
+                                                <small class="text-muted">Just now</small>
+                                            </div>
+                                            <p class="card-text small mb-1">Math (4), Science (4)</p>
+                                            <div class="d-flex justify-content-end mt-2">
+                                                <button class="btn btn-sm btn-outline-primary me-1" onclick="loadFromHistory(this)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteHistory(this)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-center py-5" id="emptyHistory" style="display: none;">
+                                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">Your calculation history will appear here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grading System Tab -->
+            <div class="tab-pane fade" id="system" role="tabpanel">
+                <div class="system-info">
+                    <h4 class="mb-4"><i class="fas fa-info-circle me-2"></i>Nepali Grading System</h4>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Percentage Obtained</th>
+                                    <th>Grade</th>
+                                    <th>Grade Description</th>
+                                    <th>Grade Point</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>≥ 90%</td>
+                                    <td><span class="grade-display grade-Aplus">A+</span></td>
+                                    <td>Outstanding</td>
+                                    <td>4.0</td>
+                                </tr>
+                                <tr>
+                                    <td>≥ 80% and &lt; 90%</td>
+                                    <td><span class="grade-display grade-A">A</span></td>
+                                    <td>Excellent</td>
+                                    <td>3.6</td>
+                                </tr>
+                                <tr>
+                                    <td>≥ 70% and &lt; 80%</td>
+                                    <td><span class="grade-display grade-Bplus">B+</span></td>
+                                    <td>Very Good</td>
+                                    <td>3.2</td>
+                                </tr>
+                                <tr>
+                                    <td>≥ 60% and &lt; 70%</td>
+                                    <td><span class="grade-display grade-B">B</span></td>
+                                    <td>Good</td>
+                                    <td>2.8</td>
+                                </tr>
+                                <tr>
+                                    <td>≥ 50% and &lt; 60%</td>
+                                    <td><span class="grade-display grade-Cplus">C+</span></td>
+                                    <td>Above Average</td>
+                                    <td>2.4</td>
+                                </tr>
+                                <tr>
+                                    <td>≥ 40% and &lt; 50%</td>
+                                    <td><span class="grade-display grade-C">C</span></td>
+                                    <td>Average</td>
+                                    <td>2.0</td>
+                                </tr>
+                                <tr>
+                                    <td>≥ 35% and &lt; 40%</td>
+                                    <td><span class="grade-display grade-D">D</span></td>
+                                    <td>Below Average</td>
+                                    <td>1.6</td>
+                                </tr>
+                                <tr>
+                                    <td>&lt; 35%</td>
+                                    <td><span class="grade-display grade-NG">NG</span></td>
+                                    <td>Non Graded</td>
+                                    <td>-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5><i class="fas fa-lightbulb me-2"></i>How to Calculate GPA</h5>
+                        <p class="mb-1">GPA is calculated using the formula:</p>
+                        <div class="alert alert-light">
+                            GPA = Σ (Credit Hour × Grade Point) / Σ Total Credit Hours
+                        </div>
+                        <p class="mb-0"><strong>Example:</strong> If you have two subjects:</p>
+                        <ul>
+                            <li>Math: Credit Hour = 4, Grade Point = 3.6</li>
+                            <li>Science: Credit Hour = 4, Grade Point = 3.2</li>
+                        </ul>
+                        <p>Then GPA = (4×3.6 + 4×3.2) / (4+4) = (14.4 + 12.8)/8 = 27.2/8 = 3.4</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Nepali Grading System Tool &copy; 2023 | Class 1 to 12</p>
+        </div>
+    </div>
 
-    <br>
-
-    <button onclick="calculateGrade()" class="btn btn-success"> ♻ Calculate</button>
-    <button onclick="showHistory()" class="btn btn-primary"><b>↻</b> History</button>
-
-    <div id="result"></div>
-    <div id="history" class="mt-4"></div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Load historyData from localStorage on page load
-        var historyData = JSON.parse(localStorage.getItem('historyData')) || [];
-
+        // Grade Calculator
         function calculateGrade() {
-            var subject = document.getElementById('subject').value;
-            var fullMark = parseInt(document.getElementById('fullMark').value);
-            var obedientMarks = parseInt(document.getElementById('obedientMarks').value);
-
-            if (isNaN(fullMark) || isNaN(obedientMarks)) {
-                alert("Please enter valid numeric values for Full Mark and Obedient Marks.");
+            const obtained = parseFloat(document.getElementById('obtainedMarks').value);
+            const total = parseFloat(document.getElementById('totalMarks').value);
+            
+            if (isNaN(obtained)) {
+                alert('Please enter obtained marks');
                 return;
             }
-
-            var percentage = (obedientMarks / fullMark) * 100;
-
-            var grade, gradePoint;
-
+            
+            if (isNaN(total) || total <= 0) {
+                alert('Total marks must be a positive number');
+                return;
+            }
+            
+            const percentage = (obtained / total) * 100;
+            const gradeInfo = getGradeInfo(percentage);
+            
+            document.getElementById('percentageResult').textContent = percentage.toFixed(2) + '%';
+            document.getElementById('gradeResultText').textContent = gradeInfo.grade;
+            document.getElementById('gradeResultText').className = 'h2 fw-bold ' + gradeInfo.colorClass;
+            document.getElementById('gpResult').textContent = gradeInfo.gp;
+            document.getElementById('descriptionResult').textContent = gradeInfo.description;
+        }
+        
+        function getGradeInfo(percentage) {
             if (percentage >= 90) {
-                grade = "A+";
-                gradePoint = "4.0";
+                return {grade: 'A+', gp: '4.0', description: 'Outstanding', colorClass: 'grade-Aplus'};
             } else if (percentage >= 80) {
-                grade = "A";
-                gradePoint = "3.6";
+                return {grade: 'A', gp: '3.6', description: 'Excellent', colorClass: 'grade-A'};
             } else if (percentage >= 70) {
-                grade = "B+";
-                gradePoint = "3.2";
+                return {grade: 'B+', gp: '3.2', description: 'Very Good', colorClass: 'grade-Bplus'};
             } else if (percentage >= 60) {
-                grade = "B";
-                gradePoint = "2.8";
+                return {grade: 'B', gp: '2.8', description: 'Good', colorClass: 'grade-B'};
             } else if (percentage >= 50) {
-                grade = "C+";
-                gradePoint = "2.0";
+                return {grade: 'C+', gp: '2.4', description: 'Above Average', colorClass: 'grade-Cplus'};
             } else if (percentage >= 40) {
-                grade = "C";
-                gradePoint = "2.0";
+                return {grade: 'C', gp: '2.0', description: 'Average', colorClass: 'grade-C'};
             } else if (percentage >= 35) {
-                grade = "D";
-                gradePoint = "1.6";
+                return {grade: 'D', gp: '1.6', description: 'Below Average', colorClass: 'grade-D'};
             } else {
-                grade = "NG";
-                gradePoint = "-";
+                return {grade: 'NG', gp: '-', description: 'Non Graded', colorClass: 'grade-NG'};
             }
-
-            var result = `<p>Subject: ${subject}</p>`;
-            result += `<p>Percentage: ${percentage.toFixed(2)}%</p>`;
-            result += `<p>Grade: ${grade}</p>`;
-            result += `<p>Grade Point: ${gradePoint}</p>`;
-
-            document.getElementById('result').innerHTML = result;
-
-            // Save data to history and localStorage
-            historyData.push({
-                subject: subject,
-                percentage: percentage.toFixed(2),
-                grade: grade,
-                gradePoint: gradePoint
-            });
-            localStorage.setItem('historyData', JSON.stringify(historyData));
         }
-
-        function showHistory() {
-            var historyDiv = document.getElementById('history');
-            historyDiv.innerHTML = "<h2>History</h2>";
-
-            if (historyData.length === 0) {
-                historyDiv.innerHTML += "<p>No history available.</p>";
-            } else {
-                var table = `
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Subject</th>
-                                <th>Percentage</th>
-                                <th>Grade</th>
-                                <th>Grade Point</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-
-                for (var i = 0; i < historyData.length; i++) {
-                    table += `
-                        <tr>
-                            <td>${historyData[i].subject}</td>
-                            <td>${historyData[i].percentage}%</td>
-                            <td>${historyData[i].grade}</td>
-                            <td>${historyData[i].gradePoint}</td>
-                            <td><button onclick="deleteEntry(${i})" class="btn btn-warning btn-sm"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button></td>
-                        </tr>
-                    `;
+        
+        // GPA Calculator
+        function addSubject() {
+            const table = document.getElementById('subjectTable');
+            const newRow = document.createElement('tr');
+            newRow.className = 'subject-row';
+            
+            newRow.innerHTML = `
+                <td>
+                    <input type="text" class="form-control subject-name" placeholder="e.g. English">
+                </td>
+                <td>
+                    <input type="number" class="form-control credit-hour" value="3" min="0" step="0.5">
+                </td>
+                <td>
+                    <input type="number" class="form-control obtained-marks" placeholder="Marks" min="0">
+                </td>
+                <td>
+                    <input type="number" class="form-control total-marks" placeholder="Total" value="100" min="1">
+                </td>
+                <td class="align-middle text-center">
+                    <span class="fw-bold">-</span>
+                </td>
+                <td class="align-middle">
+                    <button class="btn btn-sm btn-danger" onclick="removeSubject(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            
+            table.appendChild(newRow);
+        }
+        
+        function removeSubject(button) {
+            const rows = document.querySelectorAll('#subjectTable tr');
+            if (rows.length <= 1) {
+                alert('You need at least one subject');
+                return;
+            }
+            
+            const row = button.closest('tr');
+            row.remove();
+        }
+        
+        function calculateGPA() {
+            const rows = document.querySelectorAll('#subjectTable tr');
+            let totalPoints = 0;
+            let totalCredits = 0;
+            let allValid = true;
+            
+            rows.forEach(row => {
+                const creditHour = parseFloat(row.querySelector('.credit-hour').value);
+                const obtained = parseFloat(row.querySelector('.obtained-marks').value);
+                const total = parseFloat(row.querySelector('.total-marks').value);
+                
+                if (isNaN(creditHour) || creditHour <= 0) {
+                    alert('Credit hours must be a positive number');
+                    allValid = false;
+                    return;
                 }
-
-                table += `
-                    </tbody>
-                    </table>
-                    <button onclick="clearHistory()" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Clear All</button>
-                `;
-
-                historyDiv.innerHTML += table;
-            }
-
-            historyDiv.style.display = 'block';
+                
+                if (isNaN(obtained)) {
+                    alert('Please enter obtained marks for all subjects');
+                    allValid = false;
+                    return;
+                }
+                
+                if (isNaN(total) || total <= 0) {
+                    alert('Total marks must be a positive number');
+                    allValid = false;
+                    return;
+                }
+                
+                const percentage = (obtained / total) * 100;
+                const gradeInfo = getGradeInfo(percentage);
+                const gp = gradeInfo.gp === '-' ? 0 : parseFloat(gradeInfo.gp);
+                
+                // Update grade point display
+                const gpCell = row.querySelector('td:nth-child(5) span');
+                gpCell.textContent = gp.toFixed(1);
+                gpCell.className = 'fw-bold ' + gradeInfo.colorClass;
+                
+                totalPoints += creditHour * gp;
+                totalCredits += creditHour;
+            });
+            
+            if (!allValid) return;
+            
+            const gpa = totalCredits > 0 ? totalPoints / totalCredits : 0;
+            
+            document.getElementById('gpaValue').textContent = gpa.toFixed(2);
+            document.getElementById('totalPoints').textContent = totalPoints.toFixed(1);
+            document.getElementById('totalCredits').textContent = totalCredits.toFixed(1);
+            document.getElementById('gpaResult').style.display = 'block';
+            
+            // Add to history
+            addToHistory(gpa);
         }
-
-        function deleteEntry(index) {
-            historyData.splice(index, 1);
-            localStorage.setItem('historyData', JSON.stringify(historyData));
-            showHistory();
+        
+        function addToHistory(gpa) {
+            const subjects = [];
+            const rows = document.querySelectorAll('#subjectTable tr');
+            
+            rows.forEach(row => {
+                const subjectName = row.querySelector('.subject-name').value || 'Subject';
+                const creditHour = row.querySelector('.credit-hour').value;
+                subjects.push({name: subjectName, credit: creditHour});
+            });
+            
+            // Hide empty history message
+            document.getElementById('emptyHistory').style.display = 'none';
+            
+            // Create history entry
+            const historyEntry = document.createElement('div');
+            historyEntry.className = 'card history-item mb-2';
+            historyEntry.innerHTML = `
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="card-title">GPA: ${gpa.toFixed(2)}</h6>
+                        <small class="text-muted">Just now</small>
+                    </div>
+                    <p class="card-text small mb-1">${subjects.map(sub => `${sub.name} (${sub.credit})`).join(', ')}</p>
+                    <div class="d-flex justify-content-end mt-2">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="loadFromHistory(this)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteHistory(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('historyContainer').prepend(historyEntry);
         }
-
+        
         function clearHistory() {
-            historyData = [];
-            localStorage.setItem('historyData', JSON.stringify(historyData));
-            showHistory();
+            if (confirm('Are you sure you want to clear all history?')) {
+                document.getElementById('historyContainer').innerHTML = `
+                    <div class="text-center py-5" id="emptyHistory">
+                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Your calculation history will appear here</p>
+                    </div>
+                `;
+            }
         }
+        
+        function deleteHistory(button) {
+            if (confirm('Delete this history entry?')) {
+                const entry = button.closest('.history-item');
+                entry.remove();
+                
+                // Show empty message if no history left
+                if (document.querySelectorAll('.history-item').length === 0) {
+                    document.getElementById('emptyHistory').style.display = 'block';
+                }
+            }
+        }
+        
+        function loadFromHistory(button) {
+            alert('In a complete implementation, this would load the calculation back into the form');
+        }
+        
+        // Initialize the page with some content
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up event listeners for GPA inputs
+            document.querySelectorAll('.obtained-marks, .total-marks').forEach(input => {
+                input.addEventListener('change', function() {
+                    const row = this.closest('tr');
+                    const obtained = parseFloat(row.querySelector('.obtained-marks').value);
+                    const total = parseFloat(row.querySelector('.total-marks').value);
+                    
+                    if (!isNaN(obtained) && !isNaN(total) && total > 0) {
+                        const percentage = (obtained / total) * 100;
+                        const gradeInfo = getGradeInfo(percentage);
+                        const gpCell = row.querySelector('td:nth-child(5) span');
+                        gpCell.textContent = gradeInfo.gp;
+                        gpCell.className = 'fw-bold ' + gradeInfo.colorClass;
+                    }
+                });
+            });
+        });
     </script>
-
-<center><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiHmJgbgc9Cfq8GvzFJUYVrVT5aeGqoqAcHEIufe1fwD2FzwmMWGS4FI1YEb_H8haWEXC2vTsCAZQ_3N9w0wgddjzAbU9xlU-z0ett6cPQA1X6fnDeQLWS_2yN8RbvIFlOwAQpNXCKh4CCaMzrKKLwvvkHRK9SMA3n4tITIXoSZ0zhLGH_qkUcqmiUVtek/s605/1698932455372.jpg" alt="Shiva Prasad Dhakal" style="width:80px;height:;"></center>
-<center>Copyright © 2080 (2023)- All Rights Reserved - <a href="https://www.shivanp.com.np/">Shiva Prasad Dhakal</a></center>
-<center>Email: dhakalvi@gmail.com</center>
-<center>Contact: 9867026254, 9806520067</center>
-<center>Designed By: <a href="https://www.facebook.com/shiva.dhakal.378">Shiva Prasad Dhakal</a></center>
 </body>
+<footer class="bg-dark text-white mt-5 py-4">
+  <div class="container text-center">
+    <p class="mb-1 fw-bold">Developed by <span class="text-info">Shiva Prasad Dhakal</span></p>
+    <p class="mb-1">
+      <i class="fas fa-globe"></i>
+      <a href="https://www.shivanp.com.np" target="_blank" class="text-decoration-none text-light">www.shivanp.com.np</a>
+    </p>
+    <p class="mb-1">
+      <i class="fas fa-envelope"></i>
+      <a href="mailto:dhakalvi@gmail.com" class="text-decoration-none text-light">dhakalvi@gmail.com</a>
+    </p>
+    <p class="mb-1">
+      <i class="fas fa-phone-alt"></i> +977 9867026254
+    </p>
+    <p class="mb-0">
+      <i class="fas fa-map-marker-alt"></i> Baudikali-1, Nawalparasi, Nepal
+    </p>
+  </div>
+</footer>
 </html>
