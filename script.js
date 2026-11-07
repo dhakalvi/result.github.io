@@ -3,7 +3,7 @@
  * OFFLINE HTML + ONLINE JSON AUTHENTICATION
  *
  * JSON DATABASE:
- * https://shivanp.com.np/Database/user.json
+ * http://shivanp.com.np/Database/user.json
  *
  * Authentication Validity: 8 Hours
  */
@@ -13,7 +13,7 @@
 
     // ONLINE JSON DATABASE URL
     const USER_FILE =
-        "https://shivanp.com.np/Database/user.json";
+        "http://shivanp.com.np/Database/user.json";
 
     // Authentication Settings
     const AUTH_KEY = "html_user_pin_gate_auth";
