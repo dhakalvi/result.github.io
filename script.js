@@ -1,41 +1,66 @@
 
 /*
- * USERNAME + PIN SECURITY GATE
- * Credential source: Database/user.json
- * Authentication duration: 8 Hours
+ * OFFLINE HTML + ONLINE JSON AUTHENTICATION
+ *
+ * JSON DATABASE:
+ * https://shivanp.com.np/Database/user.json
+ *
+ * Authentication Validity: 8 Hours
  */
 
 (function () {
     "use strict";
 
-    const USER_FILE = "http://shivanp.com.np/Database/user.json";
+    // ONLINE JSON DATABASE URL
+    const USER_FILE =
+        "https://shivanp.com.np/Database/user.json";
 
+    // Authentication Settings
     const AUTH_KEY = "html_user_pin_gate_auth";
 
-    const EIGHT_HOURS_MS = 8 * 60 * 60 * 1000;
+    const EIGHT_HOURS =
+        8 * 60 * 60 * 1000;
 
-    // Check existing authentication
+    // =================================
+    // CHECK PREVIOUS AUTHENTICATION
+    // =================================
+
     try {
+
         const saved = JSON.parse(
             localStorage.getItem(AUTH_KEY) || "null"
         );
 
         if (
             saved &&
-            saved.verifiedAt &&
-            Date.now() - saved.verifiedAt < EIGHT_HOURS_MS
+            Number.isFinite(saved.verifiedAt)
         ) {
-            return;
+
+            const elapsed =
+                Date.now() - saved.verifiedAt;
+
+            if (
+                elapsed >= 0 &&
+                elapsed < EIGHT_HOURS
+            ) {
+                return;
+            }
         }
 
         localStorage.removeItem(AUTH_KEY);
 
-    } catch (e) {}
+    } catch (error) {
+        // Continue with fresh verification
+    }
 
-    // Security screen styling
+    // =================================
+    // CREATE LOGIN SCREEN
+    // =================================
+
     const style = document.createElement("style");
 
     style.textContent = `
+
         body > * {
             visibility: hidden !important;
         }
@@ -44,12 +69,16 @@
             position: fixed;
             inset: 0;
             z-index: 2147483647;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             padding: 20px;
             background: #101827;
+
             font-family: Arial, sans-serif;
+
             visibility: visible !important;
         }
 
@@ -61,16 +90,20 @@
         .gate-card {
             width: 100%;
             max-width: 390px;
+
             padding: 30px;
-            background: #fff;
+
+            background: white;
             border-radius: 15px;
+
             text-align: center;
+
             box-shadow: 0 10px 40px #0005;
         }
 
         .gate-card h2 {
-            margin: 0 0 8px;
             color: #172033;
+            margin-top: 0;
         }
 
         .gate-card p {
@@ -79,29 +112,38 @@
 
         .gate-field {
             display: block;
+
             width: 100%;
             height: 48px;
+
             margin: 12px 0;
             padding: 0 13px;
+
             border: 1px solid #cbd5e1;
             border-radius: 8px;
+
             font-size: 16px;
         }
 
         #gateSubmit {
             width: 100%;
+
             padding: 13px;
-            border: 0;
+
+            border: none;
             border-radius: 8px;
+
             background: #2563eb;
             color: white;
+
             font-size: 16px;
             font-weight: bold;
+
             cursor: pointer;
         }
 
         #gateSubmit:disabled {
-            opacity: .65;
+            opacity: 0.6;
             cursor: wait;
         }
 
@@ -115,19 +157,28 @@
             color: #dc2626;
         }
 
+        #gateMessage.success {
+            color: #16a34a;
+        }
+
         #gateMessage.info {
             color: #475569;
         }
+
     `;
 
     document.head.appendChild(style);
 
-    // Create login screen
+    // =================================
+    // LOGIN FORM
+    // =================================
+
     const overlay = document.createElement("div");
 
     overlay.id = "userPinGate";
 
     overlay.innerHTML = `
+
         <div class="gate-card">
 
             <h2>User Verification</h2>
@@ -137,13 +188,13 @@
                 प्रविष्ट गर्नुहोस्।
             </p>
 
-            <form id="gateForm" autocomplete="on">
+            <form id="gateForm">
 
                 <input
                     class="gate-field"
                     id="gateUsername"
                     type="text"
-                    placeholder="Username"
+                    placeholder="Enter Username"
                     autocomplete="username"
                     required
                 >
@@ -152,15 +203,14 @@
                     class="gate-field"
                     id="gatePin"
                     type="password"
-                    placeholder="PIN"
-                    inputmode="numeric"
+                    placeholder="Enter PIN"
                     autocomplete="current-password"
                     required
                 >
 
                 <button
-                    id="gateSubmit"
                     type="submit"
+                    id="gateSubmit"
                 >
                     Verify & Unlock
                 </button>
@@ -174,12 +224,17 @@
             ></div>
 
         </div>
+
     `;
 
     document.documentElement.appendChild(overlay);
 
-    // Get elements
-    const form = document.getElementById("gateForm");
+    // =================================
+    // GET FORM ELEMENTS
+    // =================================
+
+    const form =
+        document.getElementById("gateForm");
 
     const usernameInput =
         document.getElementById("gateUsername");
@@ -193,121 +248,168 @@
     const message =
         document.getElementById("gateMessage");
 
-    // Display messages
     function showMessage(text, type) {
 
         message.textContent = text;
-
         message.className = type || "";
 
     }
 
     usernameInput.focus();
 
-    // Username and PIN verification
-    form.addEventListener("submit", async function (event) {
+    // =================================
+    // USERNAME + PIN VERIFICATION
+    // =================================
 
-        event.preventDefault();
+    form.addEventListener(
+        "submit",
+        async function (event) {
 
-        const enteredUsername =
-            usernameInput.value.trim();
+            event.preventDefault();
 
-        const enteredPin =
-            pinInput.value.trim();
+            const enteredUsername =
+                usernameInput.value.trim();
 
-        if (!enteredUsername || !enteredPin) {
+            const enteredPin =
+                pinInput.value.trim();
 
-            showMessage(
-                "कृपया Username र PIN दुवै प्रविष्ट गर्नुहोस्।",
-                "error"
-            );
-
-            return;
-        }
-
-        submitButton.disabled = true;
-
-        showMessage(
-            "प्रमाणीकरण हुँदैछ...",
-            "info"
-        );
-
-        try {
-
-            // Read JSON database
-            const response = await fetch(
-                USER_FILE,
-                { cache: "no-store" }
-            );
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Credential file could not be loaded."
-                );
-
-            }
-
-            const userData = await response.json();
-
-            const validUsername =
-                String(userData.Username ?? "");
-
-            const validPin =
-                String(userData.Pin ?? "");
-
-            // Verify credentials
             if (
-                enteredUsername === validUsername &&
-                enteredPin === validPin
+                !enteredUsername ||
+                !enteredPin
             ) {
 
-                // Save authentication for 8 hours
-                try {
-
-                    localStorage.setItem(
-                        AUTH_KEY,
-                        JSON.stringify({
-                            verifiedAt: Date.now()
-                        })
-                    );
-
-                } catch (storageError) {}
-
-                // Unlock protected page
-                overlay.remove();
-
-                style.remove();
-
-                return;
-
-            } else {
-
-                // Invalid credentials warning
                 showMessage(
-                    "गलत Username वा PIN! कृपया पुनः प्रयास गर्नुहोस्।",
+                    "कृपया Username र PIN दुवै राख्नुहोस्।",
                     "error"
                 );
 
-                pinInput.value = "";
+                return;
+            }
 
-                pinInput.focus();
+            submitButton.disabled = true;
+
+            showMessage(
+                "Database जाँच हुँदैछ...",
+                "info"
+            );
+
+            try {
+
+                // FETCH ONLINE JSON DATABASE
+
+                const response = await fetch(
+                    USER_FILE,
+                    {
+                        method: "GET",
+                        mode: "cors",
+                        credentials: "omit",
+                        cache: "no-store"
+                    }
+                );
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "HTTP Error: " + response.status
+                    );
+
+                }
+
+                // READ JSON DATA
+
+                const userData =
+                    await response.json();
+
+                if (
+                    !userData ||
+                    typeof userData !== "object" ||
+                    !userData.Username ||
+                    userData.Pin === undefined
+                ) {
+
+                    throw new Error(
+                        "Invalid JSON Database Format"
+                    );
+
+                }
+
+                const validUsername =
+                    String(userData.Username);
+
+                const validPin =
+                    String(userData.Pin);
+
+                // VERIFY USERNAME AND PIN
+
+                if (
+                    enteredUsername === validUsername &&
+                    enteredPin === validPin
+                ) {
+
+                    // SAVE 8 HOURS SESSION
+
+                    try {
+
+                        localStorage.setItem(
+                            AUTH_KEY,
+                            JSON.stringify({
+                                verifiedAt: Date.now()
+                            })
+                        );
+
+                    } catch (storageError) {
+
+                        console.warn(
+                            "LocalStorage unavailable."
+                        );
+
+                    }
+
+                    showMessage(
+                        "Verification Successful!",
+                        "success"
+                    );
+
+                    // UNLOCK PAGE
+
+                    overlay.remove();
+                    style.remove();
+
+                    return;
+
+                } else {
+
+                    // WRONG CREDENTIALS
+
+                    showMessage(
+                        "गलत Username वा PIN! पुनः प्रयास गर्नुहोस्।",
+                        "error"
+                    );
+
+                    pinInput.value = "";
+                    pinInput.focus();
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Authentication Error:",
+                    error
+                );
+
+                showMessage(
+                    "Database जाँच गर्न सकिएन! CORS, Internet वा JSON URL जाँच गर्नुहोस्।",
+                    "error"
+                );
+
+            } finally {
+
+                submitButton.disabled = false;
 
             }
 
-        } catch (error) {
-
-            showMessage(
-                "प्रमाणीकरण फाइल पढ्न सकिएन। Database/user.json को path र server जाँच गर्नुहोस्।",
-                "error"
-            );
-
-        } finally {
-
-            submitButton.disabled = false;
-
         }
-
-    });
+    );
 
 })();
