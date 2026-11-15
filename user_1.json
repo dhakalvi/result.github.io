@@ -1,10 +1,47 @@
-{
-    "Username": "sdss",
-    "Pin": "4831",
-    "Email": "dedhgaunmavi@gmail.com",
-    "Phone": "9867026254",
-    "Address": "Baudikali",
-    "RenewDate": "2026-11-13",
-    "RenewalPeriod": "1 Month",
-    "ExpiryDate": "2026-12-13"
-}
+[
+    {
+        "ID": "USR-0001",
+        "Username": "sdss",
+        "Pin": "4831",
+        "Email": "dedhgaunmavi@gmail.com",
+        "Phone": "9867026254",
+        "Address": "Baudikali",
+        "RenewDate": "2026-11-13",
+        "ValidFrom": "2026-11-13",
+        "RenewalPeriod": "Unlimited",
+        "ExpiryDate": null,
+        "Status": "Active",
+        "CreatedAt": "2026-11-13 09:00:00",
+        "UpdatedAt": "2026-11-13 20:03:57"
+    },
+    {
+        "ID": "USR-0002",
+        "Username": "pokhara_school",
+        "Pin": "1234",
+        "Email": "info@pokharaschool.edu.np",
+        "Phone": "9846012345",
+        "Address": "Pokhara-8, Gandaki",
+        "RenewDate": "2026-11-13",
+        "ValidFrom": "2026-11-21",
+        "RenewalPeriod": "3 Days",
+        "ExpiryDate": "2026-11-24",
+        "Status": "Suspended",
+        "CreatedAt": "2026-11-10 10:15:00",
+        "UpdatedAt": "2026-11-13 20:08:01"
+    },
+    {
+        "ID": "USR-0003",
+        "Username": "gandaki_pro",
+        "Pin": "1234",
+        "Email": "admin@gandakipro.com",
+        "Phone": "9856098765",
+        "Address": "Lakeside, Pokhara",
+        "RenewDate": "2026-10-01",
+        "ValidFrom": "2026-10-01",
+        "RenewalPeriod": "Unlimited",
+        "ExpiryDate": null,
+        "Status": "Inactive",
+        "CreatedAt": "2026-10-01 08:30:00",
+        "UpdatedAt": "2026-11-13 20:36:27"
+    }
+]
